@@ -1,0 +1,6 @@
+{
+  "name": "Ibni - Kawalan Skrin & Pembelajaran",
+  "description": "Platform pintar kawalan masa skrin tetap, integrasi waktu solat sebenar, tugasan pembelajaran, dan pustaka permainan interaktif untuk Anak, Ibu Bapa, dan Guru.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

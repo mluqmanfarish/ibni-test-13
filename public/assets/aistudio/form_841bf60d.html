@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soal Selidik Kajian - Ibni</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Corak geometri latar belakang mengikut reka bentuk asal */
+        .shape-pink {
+            position: fixed;
+            width: 240px;
+            height: 240px;
+            background-color: #f7a8ca;
+            border-radius: 50%;
+            top: -80px;
+            left: -60px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .shape-green {
+            position: fixed;
+            width: 0;
+            height: 0;
+            border-bottom: 220px solid #c0e6ba;
+            border-left: 220px solid transparent;
+            top: 40px;
+            right: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .shape-yellow {
+            position: fixed;
+            width: 180px;
+            height: 180px;
+            background-color: #fff4b5;
+            bottom: -40px;
+            right: -30px;
+            transform: rotate(20deg);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .ibni-card {
+            background-color: rgba(255, 255, 255, 0.96);
+            border: 2.5px solid #000000;
+            border-radius: 28px;
+            box-shadow: 0 6px 0px #000000;
+        }
+
+        .role-pill {
+            border: 2.5px solid #000000;
+            transition: all 0.2s ease;
+        }
+
+        .role-pill:hover {
+            transform: translateY(-2px);
+        }
+
+        input[type="radio"]:checked + .role-pill {
+            background-color: #17d1e1;
+            color: #ffffff;
+            box-shadow: 0 4px 0px #000000;
+        }
+
+        input[type="radio"]:checked + .role-pill .radio-dot {
+            background-color: #ffffff;
+            border-color: #000000;
+        }
+
+        input[type="radio"]:checked + .role-pill .radio-dot::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #17d1e1;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .ibni-input {
+            border: 2px solid #000000;
+            border-radius: 16px;
+        }
+
+        .ibni-btn {
+            border: 2.5px solid #000000;
+            box-shadow: 0 4px 0px #000000;
+            transition: all 0.15s ease;
+        }
+
+        .ibni-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px #000000;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 relative text-black">
+
+    <!-- Elemen Geometri Latar Belakang -->
+    <div class="shape-pink"></div>
+    <div class="shape-green"></div>
+    <div class="shape-yellow"></div>
+
+    <!-- Kontena Utama Borang -->
+    <div class="relative z-10 max-w-2xl mx-auto space-y-6">
+
+        <!-- Pengepala & Logo Ibni -->
+        <header class="pt-4 pb-2">
+            <div class="mb-4">
+                <img src="ibni_logo.png" alt="Ibni Logo" class="h-20 object-contain" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
+                <div id="logoFallback" style="display: none;" class="items-start">
+                    <h1 class="text-6xl font-extrabold text-black tracking-tight leading-none">Ibni.</h1>
+                    <span class="text-sm font-extrabold ml-1 mt-1">TM</span>
+                </div>
+            </div>
+            <p class="text-base sm:text-lg font-medium text-black max-w-md leading-snug">
+                Kaji Selidik Inovasi Pendidikan & Kawalan Masa Skrin Pintar.
+            </p>
+        </header>
+
+        <!-- BORANG SOAL SELIDIK -->
+        <form id="surveyForm" onsubmit="submitSurvey(event)" class="space-y-6">
+
+            <!-- 1. JENIS RESPONDEN (entry.1588020940) -->
+            <section class="ibni-card p-6 sm:p-8 space-y-4">
+                <h2 class="text-2xl font-extrabold text-black">Jenis Responden</h2>
+                <p class="text-sm text-slate-600">Sila pilih peranan anda untuk memaparkan bahagian soalan yang berkaitan.</p>
+
+                <div class="space-y-3 pt-2">
+                    <label class="block cursor-pointer">
+                        <input type="radio" name="jenis_responden" value="Ibu Bapa" class="sr-only" onchange="updateFormSections()" required>
+                        <div class="role-pill bg-[#38bdf8] text-white rounded-full px-6 py-4 flex justify-between items-center">
+                            <span class="text-lg font-bold">Saya ibu bapa / penjaga</span>
+                            <div class="radio-dot w-6 h-6 rounded-full border-2 border-black bg-white relative flex-shrink-0"></div>
+                        </div>
+                    </label>
+
+                    <label class="block cursor-pointer">
+                        <input type="radio" name="jenis_responden" value="Guru" class="sr-only" onchange="updateFormSections()">
+                        <div class="role-pill bg-[#38bdf8] text-white rounded-full px-6 py-4 flex justify-between items-center">
+                            <span class="text-lg font-bold">Saya guru sekolah</span>
+                            <div class="radio-dot w-6 h-6 rounded-full border-2 border-black bg-white relative flex-shrink-0"></div>
+                        </div>
+                    </label>
+
+                    <label class="block cursor-pointer">
+                        <input type="radio" name="jenis_responden" value="Kedua-duanya (Ibu Bapa & Guru)" class="sr-only" onchange="updateFormSections()">
+                        <div class="role-pill bg-[#38bdf8] text-white rounded-full px-6 py-4 flex justify-between items-center">
+                            <span class="text-lg font-bold">Kedua-duanya (Ibu Bapa & Guru)</span>
+                            <div class="radio-dot w-6 h-6 rounded-full border-2 border-black bg-white relative flex-shrink-0"></div>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <!-- BAHAGIAN IBU BAPA (Soalan 2 hingga 6 dalam Google Form) -->
+            <section id="section-parent" class="ibni-card p-6 sm:p-8 space-y-6 hidden">
+                <div class="inline-block bg-[#f7a8ca] border-2 border-black px-4 py-1 rounded-full text-xs font-extrabold uppercase">
+                    Bahagian Ibu Bapa / Penjaga
+                </div>
+
+                <!-- Soalan 2 (entry.870009207) -->
+                <div class="space-y-2">
+                    <label class="block font-bold text-base">1. Berapakah masa yang diperuntukkan untuk anak anda pada satu hari?</label>
+                    <select name="masa_anak" class="ibni-input w-full p-3.5 bg-white font-semibold text-sm parent-field">
+                        <option value="">-- Sila pilih tempoh masa --</option>
+                        <option value="Kurang daripada 1 jam">Kurang daripada 1 jam</option>
+                        <option value="1 hingga 2 jam">1 hingga 2 jam sehari</option>
+                        <option value="3 hingga 4 jam">3 hingga 4 jam sehari</option>
+                        <option value="Lebih daripada 4 jam">Lebih daripada 4 jam sehari</option>
+                    </select>
+                </div>
+
+                <!-- Soalan 3 (entry.1366304722) -->
+                <div class="space-y-2">
+                    <label class="block font-bold text-base">2. Adakah anda mengalami kesukaran dalam mengawal penggunaan gajet anak anda?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-sm font-bold">
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-cyan-50">
+                            <input type="radio" name="sukar_kawal_gajet" value="Ya, sangat sukar" class="parent-radio">
+                            <span>Ya, sangat sukar</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-cyan-50">
+                            <input type="radio" name="sukar_kawal_gajet" value="Kadang-kadang" class="parent-radio">
+                            <span>Kadang-kadang</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-cyan-50">
+                            <input type="radio" name="sukar_kawal_gajet" value="Tidak sukar" class="parent-radio">
+                            <span>Tidak sukar</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Soalan 4 (entry.1693057531) -->
+                <div class="space-y-2">
+                    <label class="block font-bold text-base">3. Apakah alat/platform yang digunakan untuk mengawal penggunaan gajet anak anda?</label>
+                    <input type="text" name="alat_kawalan" placeholder="Contoh: Google Family Link, Apple Screen Time, Tetapan masa manual, Tiada..." class="ibni-input w-full p-3.5 bg-white font-medium text-sm parent-field focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                </div>
+
+                <!-- Soalan 5 (entry.1112025074) -->
+                <div class="space-y-2">
+                    <label class="block font-bold text-base">4. Adakah anda mengalami kesukaran dalam memastikan anak anda mengulang kaji pelajaran?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-sm font-bold">
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-cyan-50">
+                            <input type="radio" name="sukar_ulang_kaji" value="Ya, sangat sukar" class="parent-radio">
+                            <span>Ya, sangat sukar</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-cyan-50">
+                            <input type="radio" name="sukar_ulang_kaji" value="Kadang-kadang" class="parent-radio">
+                            <span>Kadang-kadang</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-cyan-50">
+                            <input type="radio" name="sukar_ulang_kaji" value="Tidak sukar" class="parent-radio">
+                            <span>Tidak sukar</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Soalan 6 (entry.1871790206) -->
+                <div class="space-y-2">
+                    <label class="block font-bold text-base">5. Adakah anda mengalami kesukaran dalam memastikan anak anda menunaikan kewajipan solat fardu?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-sm font-bold">
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-cyan-50">
+                            <input type="radio" name="sukar_solat" value="Ya, sangat sukar" class="parent-radio">
+                            <span>Ya, sangat sukar</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-cyan-50">
+                            <input type="radio" name="sukar_solat" value="Kadang-kadang" class="parent-radio">
+                            <span>Kadang-kadang</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-cyan-50">
+                            <input type="radio" name="sukar_solat" value="Tidak sukar" class="parent-radio">
+                            <span>Tidak sukar</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BAHAGIAN GURU / PENDIDIKAN (Soalan 7 hingga 9 dalam Google Form) -->
+            <section id="section-teacher" class="ibni-card p-6 sm:p-8 space-y-6 hidden">
+                <div class="inline-block bg-[#c0e6ba] border-2 border-black px-4 py-1 rounded-full text-xs font-extrabold uppercase">
+                    Bahagian Pendidikan & Pendekatan PdPc
+                </div>
+
+                <!-- Soalan 7 (entry.1875407524) -->
+                <div class="space-y-2">
+                    <label class="block font-bold text-base">1. Adakah kaedah pembelajaran secara konvensional (seperti hanya bergantung pada sumber buku rujukan dan PdPc fizikal semata-mata) masih relevan pada zaman sekarang?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-sm font-bold">
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-emerald-50">
+                            <input type="radio" name="kaedah_konvensional" value="Masih Relevan" class="teacher-radio">
+                            <span>Masih Relevan</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-emerald-50">
+                            <input type="radio" name="kaedah_konvensional" value="Perlu Digabungkan dengan Digital" class="teacher-radio">
+                            <span>Perlu Gabung Digital</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-emerald-50">
+                            <input type="radio" name="kaedah_konvensional" value="Kurang Relevan" class="teacher-radio">
+                            <span>Kurang Relevan</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Soalan 8 (entry.774820769) -->
+                <div class="space-y-2">
+                    <label class="block font-bold text-base">2. Adakah anda bersetuju dengan kaedah pembelajaran interaktif seperti simulasi dan nota interaktif?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-sm font-bold">
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-emerald-50">
+                            <input type="radio" name="setuju_interaktif" value="Sangat Bersetuju" class="teacher-radio">
+                            <span>Sangat Bersetuju</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-emerald-50">
+                            <input type="radio" name="setuju_interaktif" value="Bersetuju" class="teacher-radio">
+                            <span>Bersetuju</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-emerald-50">
+                            <input type="radio" name="setuju_interaktif" value="Tidak Bersetuju" class="teacher-radio">
+                            <span>Tidak Bersetuju</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Soalan 9 (entry.1367272939) -->
+                <div class="space-y-2">
+                    <label class="block font-bold text-base">3. Adakah anda bersetuju dengan penggunaan AI dalam sektor pendidikan?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-sm font-bold">
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-emerald-50">
+                            <input type="radio" name="setuju_ai" value="Sangat Bersetuju" class="teacher-radio">
+                            <span>Sangat Bersetuju</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-emerald-50">
+                            <input type="radio" name="setuju_ai" value="Bersetuju dengan Kawalan" class="teacher-radio">
+                            <span>Setuju dengan Kawalan</span>
+                        </label>
+                        <label class="ibni-input p-3 flex items-center space-x-2 cursor-pointer bg-slate-50 hover:bg-emerald-50">
+                            <input type="radio" name="setuju_ai" value="Tidak Bersetuju" class="teacher-radio">
+                            <span>Tidak Bersetuju</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BUTANG HANTAR (Muncul setelah responden membuat pilihan) -->
+            <div id="submit-container" class="hidden pt-2 pb-10">
+                <button type="submit" id="submitBtn" class="ibni-btn w-full bg-[#17d1e1] hover:bg-[#14bccb] text-white rounded-full py-4 text-xl font-extrabold">
+                    Hantar Jawapan Kajian
+                </button>
+            </div>
+
+        </form>
+
+        <!-- PAPARAN TERIMA KASIH (Selepas Hantar) -->
+        <div id="thankYouCard" class="ibni-card p-8 text-center space-y-4 hidden">
+            <div class="w-16 h-16 bg-[#c0e6ba] border-2 border-black rounded-full flex items-center justify-center mx-auto text-3xl font-black">
+                ✓
+            </div>
+            <h2 class="text-2xl font-extrabold">Terima Kasih atas Penyertaan Anda!</h2>
+            <p class="text-sm text-slate-600 max-w-md mx-auto">
+                Jawapan anda telah berjaya direkodkan ke dalam pangkalan data kajian <strong>Ibni</strong>.
+            </p>
+            <button onclick="location.reload()" class="ibni-btn bg-[#38bdf8] text-white font-bold px-6 py-3 rounded-full text-sm">
+                Isi Borang Baharu
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        function updateFormSections() {
+            const selected = document.querySelector('input[name="jenis_responden"]:checked');
+            if (!selected) return;
+
+            const role = selected.value;
+            const secParent = document.getElementById('section-parent');
+            const secTeacher = document.getElementById('section-teacher');
+            const submitContainer = document.getElementById('submit-container');
+
+            submitContainer.classList.remove('hidden');
+
+            // Kawal paparan bahagian Ibu Bapa
+            if (role === 'Ibu Bapa' || role === 'Kedua-duanya (Ibu Bapa & Guru)') {
+                secParent.classList.remove('hidden');
+                setSectionRequired('parent', true);
+            } else {
+                secParent.classList.add('hidden');
+                setSectionRequired('parent', false);
+            }
+
+            // Kawal paparan bahagian Guru
+            if (role === 'Guru' || role === 'Kedua-duanya (Ibu Bapa & Guru)') {
+                secTeacher.classList.remove('hidden');
+                setSectionRequired('teacher', true);
+            } else {
+                secTeacher.classList.add('hidden');
+                setSectionRequired('teacher', false);
+            }
+        }
+
+        function setSectionRequired(prefix, isRequired) {
+            document.querySelectorAll(`.${prefix}-field`).forEach(el => {
+                el.required = isRequired;
+            });
+            document.querySelectorAll(`.${prefix}-radio`).forEach(el => {
+                el.required = isRequired;
+            });
+        }
+
+        async function submitSurvey(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "Sedang menghantar ke Google Form...";
+
+            const formData = new FormData(event.target);
+            const dataObj = Object.fromEntries(formData.entries());
+
+            // URL rasmi Google Form anda (ditukar kepada formResponse)
+            const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSclwoA38AnizczHiABiR41pqTH7C5ulo9SySsOCGhuG2CzOxg/formResponse";
+
+            // Padanan tepat dengan setiap entry ID dalam pautan pra-isi anda
+            const googleData = new URLSearchParams();
+            googleData.append("entry.1588020940", dataObj.jenis_responden || "-");
+            googleData.append("entry.870009207",  dataObj.masa_anak || "-");
+            googleData.append("entry.1366304722", dataObj.sukar_kawal_gajet || "-");
+            googleData.append("entry.1693057531", dataObj.alat_kawalan || "-");
+            googleData.append("entry.1112025074", dataObj.sukar_ulang_kaji || "-");
+            googleData.append("entry.1871790206", dataObj.sukar_solat || "-");
+            googleData.append("entry.1875407524", dataObj.kaedah_konvensional || "-");
+            googleData.append("entry.774820769",  dataObj.setuju_interaktif || "-");
+            googleData.append("entry.1367272939", dataObj.setuju_ai || "-");
+
+            try {
+                await fetch(GOOGLE_FORM_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: googleData.toString()
+                });
+
+                // Paparkan kad terima kasih
+                document.getElementById('surveyForm').classList.add('hidden');
+                document.getElementById('thankYouCard').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (error) {
+                alert("Ralat sambungan rangkaian. Sila pastikan anda mempunyai talian internet dan cuba lagi.");
+                btn.disabled = false;
+                btn.innerText = "Hantar Jawapan Kajian";
+            }
+        }
+    </script>
+</body>
+</html>
