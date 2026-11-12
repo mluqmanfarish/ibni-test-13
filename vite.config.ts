@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/ibni-test-13/',
+    base: '/ibni-test-13/', // Must match your repository name exactly
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
