@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ibni - Platform Pembelajaran & Kawalan Pintar</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        .shape-pink { position: absolute; width: 220px; height: 110px; background-color: #f7a8ca; border-bottom-left-radius: 110px; border-bottom-right-radius: 110px; top: 0; left: 50%; transform: translateX(-50%); z-index: 0; pointer-events: none; }
+        .shape-green { position: absolute; width: 0; height: 0; border-bottom: 180px solid #c0e6ba; border-left: 180px solid transparent; top: 0; right: 0; z-index: 0; pointer-events: none; }
+        .shape-yellow { position: absolute; width: 140px; height: 140px; background-color: #fff4b5; bottom: -20px; right: -20px; transform: rotate(15deg); z-index: 0; pointer-events: none; }
+        .ibni-card { background-color: #ffffff; border: 2.5px solid #000000; border-radius: 28px; box-shadow: 0 5px 0px #000000; }
+        .ibni-pill { border: 2px solid #000000; box-shadow: 0 3px 0px #000000; transition: transform 0.1s ease; }
+        .ibni-pill:active { transform: translateY(2px); box-shadow: 0 1px 0px #000000; }
+    </style>
+</head>
+<body class="bg-white text-slate-900 antialiased min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <!-- Latar Belakang Geometri Pastel -->
+    <div class="shape-pink"></div>
+    <div class="shape-green"></div>
+    <div class="shape-yellow"></div>
+
+    <!-- 1. SKRIN PEMILIHAN PERANAN -->
+    <div id="roleSelectScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-4 relative z-50">
+        <div class="max-w-md w-full space-y-6 text-center relative z-10">
+            <div>
+                <h1 class="text-5xl font-black tracking-tight mb-2">Ibni<span class="text-cyan-500">.</span></h1>
+                <p class="text-sm font-bold text-slate-600">Sila pilih peranan anda untuk memulakan aplikasi.</p>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="selectRole('parent')" class="ibni-pill w-full bg-[#17d1e1] hover:bg-[#15b9c9] text-white font-black py-4 px-6 rounded-full text-lg flex items-center justify-between shadow-md">
+                    <span class="flex items-center"><i class="fa-solid fa-user-shield mr-3 text-xl"></i> Ibu Bapa (Parent Mode)</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+                <button onclick="selectRole('teacher')" class="ibni-pill w-full bg-[#c0e6ba] hover:bg-[#aedf9d] text-slate-900 font-black py-4 px-6 rounded-full text-lg flex items-center justify-between shadow-md">
+                    <span class="flex items-center"><i class="fa-solid fa-chalkboard-user mr-3 text-xl"></i> Guru (Teacher Mode)</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+                <button onclick="selectRole('child')" class="ibni-pill w-full bg-[#38bdf8] hover:bg-[#30a8dc] text-white font-black py-4 px-6 rounded-full text-lg flex items-center justify-between shadow-md">
+                    <span class="flex items-center"><i class="fa-solid fa-child-reaching mr-3 text-xl"></i> Anak (Child Mode)</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-400 font-medium pt-4">Platform Inovasi Kawalan Masa Skrin Tetap & Pembelajaran Islamik</p>
+        </div>
+    </div>
+
+    <!-- 2. HEADER UTAMA -->
+    <header class="bg-white/90 backdrop-blur border-b-2 border-black sticky top-0 z-40 hidden" id="appHeader">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <h1 class="text-2xl font-black tracking-tight">Ibni<span class="text-cyan-500">.</span></h1>
+                <span id="roleBadge" class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-black">Mod</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div id="headerStats" class="flex items-center space-x-2"></div>
+                <button onclick="resetRole()" class="ibni-pill bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs font-black px-3 py-1.5 rounded-xl">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Tukar Peranan
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 3. KANDUNGAN UTAMA -->
+    <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full pb-28 relative z-10 space-y-6 hidden" id="mainAppContent">
+
+        <!-- ================= MOD ANAK ================= -->
+        <div id="mode-child" class="space-y-6 hidden">
+            <!-- Widget Timer & Solat (WaktuSolat.api.detectLocate) -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="ibni-card bg-gradient-to-br from-cyan-400 to-blue-500 text-white p-5 relative overflow-hidden">
+                    <p class="text-cyan-50 text-xs font-bold uppercase tracking-wider">Baki Masa Skrin Hari Ini</p>
+                    <div class="flex items-baseline space-x-2 my-1">
+                        <h2 id="timerDisplay" class="text-3xl sm:text-4xl font-black tracking-tight">01:45:00</h2>
+                        <span class="text-[10px] bg-black/20 px-2 py-0.5 rounded font-bold text-white">Tetap (Fix)</span>
+                    </div>
+                    <p class="text-[11px] text-cyan-100 mt-2 font-medium">Nota: Menjawab kuiz tidak menambah masa skrin[cite: 9].</p>
+                </div>
+
+                <div class="ibni-card p-5 flex flex-col justify-between bg-white">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Waktu Solat Semasa</span>
+                            <span id="detectLocateBadge" class="bg-cyan-100 text-cyan-800 text-[10px] px-2.5 py-0.5 rounded-full font-extrabold border border-black">GPS: Kuala Lumpur</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-2xl bg-emerald-100 border-2 border-black flex items-center justify-center text-emerald-700 shadow-sm">
+                                <i class="fa-solid fa-mosque text-base"></i>
+                            </div>
+                            <div>
+                                <h4 id="nextPrayerName" class="font-extrabold text-slate-900 text-sm">Seterusnya: Asar</h4>
+                                <p id="nextPrayerCountdown" class="text-xs text-slate-600">Masuk dalam 01:20:10</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t-2 border-slate-100 flex justify-between items-center text-xs">
+                        <span class="text-slate-600 font-semibold">Tugasan Wajib Tertunda:</span>
+                        <span id="taskCounter" class="font-extrabold text-rose-600 bg-rose-100 border border-rose-300 px-2.5 py-0.5 rounded-full">1 Tugasan Wajib</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Navigasi Tab Anak -->
+            <div class="flex space-x-2 border-b-2 border-black pb-3 overflow-x-auto">
+                <button onclick="switchChildTab('tasks')" id="btn-child-tasks" class="ibni-pill px-4 py-2.5 rounded-2xl font-extrabold text-sm bg-black text-white whitespace-nowrap">
+                    <i class="fa-solid fa-list-check mr-2"></i> Senarai Tugas
+                </button>
+                <button onclick="switchChildTab('library')" id="btn-child-library" class="ibni-pill px-4 py-2.5 rounded-2xl font-extrabold text-sm bg-white text-slate-800 whitespace-nowrap hover:bg-slate-100">
+                    <i class="fa-solid fa-gamepad mr-2"></i> Pustaka Permainan
+                </button>
+                <button onclick="switchChildTab('friends')" id="btn-child-friends" class="ibni-pill px-4 py-2.5 rounded-2xl font-extrabold text-sm bg-white text-slate-800 whitespace-nowrap hover:bg-slate-100">
+                    <i class="fa-solid fa-user-group mr-2"></i> Rakan & Ranking
+                </button>
+            </div>
+
+            <!-- TAB TUGAS ANAK (Task List) -->
+            <div id="child-tab-tasks" class="space-y-4">
+                <div class="ibni-card p-5 bg-white space-y-3">
+                    <h3 class="font-extrabold text-base text-slate-900"><i class="fa-solid fa-triangle-exclamation text-rose-500 mr-2"></i> Tugasan Wajib Mesti Selesai</h3>
+                    <div class="p-3 bg-rose-50 border-2 border-black rounded-2xl flex justify-between items-center">
+                        <div>
+                            <h4 class="font-black text-sm">Pengembaraan Sifir Kilat</h4>
+                            <p class="text-xs text-slate-600">Selesaikan untuk buka kunci penuh aplikasi.</p>
+                        </div>
+                        <button onclick="launchGameFromTask('game-1')" class="ibni-pill bg-rose-500 text-white font-extrabold px-4 py-2 rounded-xl text-xs">Mula Tugas</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB PUSTAKA PERMAINAN ANAK -->
+            <div id="child-tab-library" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-extrabold text-lg text-slate-900">Pustaka Permainan Komuniti</h3>
+                    <span class="text-xs font-bold text-slate-500">Sandbox Iframe[cite: 9]</span>
+                </div>
+                <div id="gamesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- TAB RAKAN & RANKING ANAK (Add Friend & Point Ranking) -->
+            <div id="child-tab-friends" class="hidden space-y-4">
+                <div class="ibni-card p-5 bg-white space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-extrabold text-base">Tambah Rakan Baru</h3>
+                        <div class="flex space-x-2">
+                            <input type="text" id="friendNameInput" placeholder="ID Rakan..." class="bg-slate-50 border-2 border-black px-3 py-1.5 rounded-xl text-xs">
+                            <button onclick="addFriend()" class="ibni-pill bg-cyan-400 text-black px-3 py-1.5 rounded-xl text-xs font-black">Tambah</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ibni-card p-5 bg-white space-y-3">
+                    <h3 class="font-extrabold text-base">Papan Pendahulu Rakan (XP Ranking)</h3>
+                    <div id="friendsRankingList" class="space-y-2">
+                        <div class="flex justify-between items-center p-3 bg-slate-50 border-2 border-black rounded-xl text-sm font-bold">
+                            <span>1. Aiman Mukhriz</span>
+                            <span class="text-amber-600">1,250 XP</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-cyan-50 border-2 border-black rounded-xl text-sm font-bold">
+                            <span>2. Anda (Luqman)</span>
+                            <span class="text-cyan-700">350 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MOD PARENT ================= -->
+        <div id="mode-parent" class="space-y-6 hidden">
+            <div class="ibni-card p-6 bg-white space-y-5">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900">Panel Kawalan Ibu Bapa</h3>
+                        <p class="text-xs text-slate-600">Urus masa skrin, peranti anak, dan tugasan kuiz[cite: 9].</p>
+                    </div>
+                    <span class="bg-[#17d1e1] text-white text-xs font-black px-3 py-1.5 rounded-full border-2 border-black">Parent</span>
+                </div>
+
+                <!-- Senarai Device Anak & Timer Setting -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 border-2 border-black p-4 rounded-2xl space-y-3">
+                        <h4 class="font-extrabold text-sm"><i class="fa-solid fa-mobile-screen text-cyan-600 mr-2"></i> Senarai Peranti Anak</h4>
+                        <div class="p-3 bg-white border border-black rounded-xl flex justify-between items-center text-xs font-bold">
+                            <span>Tablet Luqman (Tab A8)</span>
+                            <span class="text-emerald-600">Online (Baki 1h 45m)</span>
+                        </div>
+                        <div class="space-y-1 pt-2">
+                            <label class="text-xs font-bold">Tetapan Had Masa Harian:</label>
+                            <div class="flex space-x-2">
+                                <input type="text" value="02:00:00" class="bg-white border-2 border-black px-3 py-1 rounded-xl text-xs font-bold w-28 text-center">
+                                <button onclick="alert('Tetapan timer berjaya disimpan!')" class="ibni-pill bg-black text-white px-3 py-1 rounded-xl text-xs font-bold">Simpan</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 border-2 border-black p-4 rounded-2xl space-y-3">
+                        <h4 class="font-extrabold text-sm"><i class="fa-solid fa-sliders text-indigo-600 mr-2"></i> Tetapan On/Off Sistem</h4>
+                        <div class="flex justify-between items-center text-xs font-bold py-1 border-b">
+                            <span>Timer Had Skrin (ON/OFF):</span>
+                            <span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full border border-black">AKTIF</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs font-bold py-1">
+                            <span>Solat Reminder & Lock (ON/OFF):</span>
+                            <span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full border border-black">AKTIF</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pustaka Game untuk Assign & Create HTML -->
+                <div class="border-t-2 border-slate-100 pt-4 space-y-3">
+                    <h4 class="font-extrabold text-sm">Pustaka Permainan & Cipta Kuiz (HTML)</h4>
+                    <div class="flex space-x-2">
+                        <button onclick="switchChildTab('upload'); selectRole('child');" class="ibni-pill bg-cyan-400 text-black font-bold px-4 py-2 rounded-xl text-xs">Cipta / Muat Naik Game HTML Baru</button>
+                        <button onclick="alert('Permainan berjaya di-assign kepada anak!')" class="ibni-pill bg-black text-white font-bold px-4 py-2 rounded-xl text-xs">Assign ke Peranti Anak</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MOD GURU ================= -->
+        <div id="mode-teacher" class="space-y-6 hidden">
+            <div class="ibni-card p-6 bg-white space-y-5">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900">Panel Pengurusan Guru</h3>
+                        <p class="text-xs text-slate-600">Urus bilik darjah, pelajar, ranking kelas, dan prestasi[cite: 9].</p>
+                    </div>
+                    <span class="bg-[#c0e6ba] text-slate-900 text-xs font-black px-3 py-1.5 rounded-full border-2 border-black">Teacher</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 border-2 border-black p-4 rounded-2xl space-y-3">
+                        <h4 class="font-extrabold text-sm"><i class="fa-solid fa-users-rectangle text-emerald-600 mr-2"></i> Bilik Darjah & Pelajar</h4>
+                        <p class="text-xs text-slate-600">Kelas: 5 Bestari (35 Pelajar)</p>
+                        <div class="flex space-x-2">
+                            <input type="text" id="studentNameInput" placeholder="Nama Pelajar Baru..." class="bg-white border-2 border-black px-3 py-1 rounded-xl text-xs font-semibold w-full">
+                            <button onclick="addStudent()" class="ibni-pill bg-black text-white px-3 py-1 rounded-xl text-xs font-bold">Add Student</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 border-2 border-black p-4 rounded-2xl space-y-3">
+                        <h4 class="font-extrabold text-sm"><i class="fa-solid fa-ranking-star text-amber-600 mr-2"></i> Class Ranking & Prestasi</h4>
+                        <div id="classRankingList" class="space-y-1 text-xs font-bold">
+                            <div class="flex justify-between p-2 bg-white border border-black rounded-lg"><span>1. Aiman Mukhriz</span><span>98% (A)</span></div>
+                            <div class="flex justify-between p-2 bg-white border border-black rounded-lg"><span>2. Luqman Hardi</span><span>92% (A)</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t-2 border-slate-100 pt-4 space-y-3">
+                    <h4 class="font-extrabold text-sm">Pustaka Game Guru (Assign & Create HTML)</h4>
+                    <button onclick="switchChildTab('upload'); selectRole('child');" class="ibni-pill bg-[#c0e6ba] text-slate-900 font-bold px-4 py-2 rounded-xl text-xs">Muat Naik Fail HTML untuk Kerja Rumah Kelas</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 4. SIDE DEV/TRIAL BAR (SIMULASI SOLAT & TIMER) -->
+    <div class="fixed bottom-4 right-4 bg-slate-900 text-white p-3 rounded-2xl border-2 border-cyan-400 shadow-2xl z-50 flex items-center space-x-3 text-xs">
+        <span class="font-black text-cyan-400"><i class="fa-solid fa-gears mr-1"></i> Dev Trial Bar:</span>
+        <button onclick="simulatePrayerTime()" class="bg-emerald-600 hover:bg-emerald-500 font-bold px-2.5 py-1 rounded-lg">Simulasi Masuk Solat</button>
+        <button onclick="simulateTimeOut()" class="bg-rose-600 hover:bg-rose-500 font-bold px-2.5 py-1 rounded-lg">Simulasi Time-Out</button>
+    </div>
+
+    <!-- GAME SANDBOX MODAL -->
+    <div id="gameModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3">
+        <div class="bg-white border-3 border-black w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh]">
+            <div class="bg-black text-white px-5 py-3.5 flex justify-between items-center border-b-2 border-black">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-cyan-400 text-black text-[10px] font-black px-2.5 py-1 rounded-lg">SANDBOX[cite: 9]</span>
+                    <h3 id="modalGameTitle" class="font-black text-sm">Tajuk Permainan</h3>
+                </div>
+                <button onclick="closeGameModal()" class="w-8 h-8 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center">×</button>
+            </div>
+            <div class="relative w-full h-[400px] bg-slate-100">
+                <iframe id="gameSandboxFrame" sandbox="allow-scripts allow-forms" class="w-full h-full border-0"></iframe>
+            </div>
+            <div class="bg-white px-5 py-3 border-t-2 border-black flex justify-between items-center">
+                <p class="text-xs text-slate-600">Permainan berjalan dalam persekitaran terasing[cite: 9].</p>
+                <button onclick="completeCurrentGame()" class="ibni-pill bg-emerald-400 font-extrabold px-4 py-2 rounded-xl text-xs">Selesai & Tuntut XP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIK SISTEM -->
+    <script>
+        let currentPoints = 350;
+        let activeGameXp = 0;
+        let currentRole = '';
+
+        function selectRole(role) {
+            currentRole = role;
+            document.getElementById('roleSelectScreen').classList.add('hidden');
+            document.getElementById('appHeader').classList.remove('hidden');
+            document.getElementById('mainAppContent').classList.remove('hidden');
+
+            document.getElementById('mode-child').classList.add('hidden');
+            document.getElementById('mode-parent').classList.add('hidden');
+            document.getElementById('mode-teacher').classList.add('hidden');
+
+            const roleBadge = document.getElementById('roleBadge');
+            const headerStats = document.getElementById('headerStats');
+
+            if (role === 'parent') {
+                document.getElementById('mode-parent').classList.remove('hidden');
+                roleBadge.innerText = 'Mod Ibu Bapa';
+                roleBadge.className = 'text-[10px] font-extrabold bg-[#17d1e1] text-white px-2.5 py-0.5 rounded-full border border-black';
+                headerStats.innerHTML = `<span class="text-xs font-extrabold bg-slate-100 px-3 py-1 rounded-xl border border-black">Anak: Luqman</span>`;
+            } else if (role === 'teacher') {
+                document.getElementById('mode-teacher').classList.remove('hidden');
+                roleBadge.innerText = 'Mod Guru';
+                roleBadge.className = 'text-[10px] font-extrabold bg-[#c0e6ba] text-slate-900 px-2.5 py-0.5 rounded-full border border-black';
+                headerStats.innerHTML = `<span class="text-xs font-extrabold bg-slate-100 px-3 py-1 rounded-xl border border-black">Kelas: 5 Bestari</span>`;
+            } else if (role === 'child') {
+                document.getElementById('mode-child').classList.remove('hidden');
+                roleBadge.innerText = 'Mod Anak';
+                roleBadge.className = 'text-[10px] font-extrabold bg-[#38bdf8] text-white px-2.5 py-0.5 rounded-full border border-black';
+                headerStats.innerHTML = `
+                    <div class="bg-amber-100 border-2 border-black px-3 py-1 rounded-full flex items-center space-x-1">
+                        <i class="fa-solid fa-star text-amber-600 text-xs"></i>
+                        <span id="userPoints" class="font-extrabold text-xs">${currentPoints} XP</span>
+                    </div>
+                `;
+                renderGames();
+            }
+        }
+
+        function resetRole() {
+            document.getElementById('roleSelectScreen').classList.remove('hidden');
+            document.getElementById('appHeader').classList.add('hidden');
+            document.getElementById('mainAppContent').classList.add('hidden');
+        }
+
+        function switchChildTab(tabId) {
+            ['tasks', 'library', 'friends'].forEach(t => {
+                const tabEl = document.getElementById('child-tab-' + t);
+                const btnEl = document.getElementById('btn-child-' + t);
+                if(tabEl) tabEl.classList.add('hidden');
+                if(btnEl) btnEl.className = "ibni-pill px-4 py-2.5 rounded-2xl font-extrabold text-sm bg-white text-slate-800 whitespace-nowrap hover:bg-slate-100";
+            });
+            const activeTab = document.getElementById('child-tab-' + tabId);
+            const activeBtn = document.getElementById('btn-child-' + tabId);
+            if(activeTab) activeTab.classList.remove('hidden');
+            if(activeBtn) activeBtn.className = "ibni-pill px-4 py-2.5 rounded-2xl font-extrabold text-sm bg-black text-white whitespace-nowrap";
+        }
+
+        // Simulasikan WaktuSolat.api.detectLocate
+        function detectLocationPrayerTime() {
+            // Simulasi fungsi API lokasi semasa
+            const badge = document.getElementById('detectLocateBadge');
+            if(badge) badge.innerText = "GPS: Kuala Lumpur (Aktif)";
+        }
+        detectLocationPrayerTime();
+
+        // Dev Trial Bar Simulations
+        function simulatePrayerTime() {
+            alert("🚨 SIMULASI: Masuk waktu Asar! Skrin dikunci dan paparan peringatan solat diaktifkan.");
+        }
+
+        function simulateTimeOut() {
+            alert("⏰ SIMULASI: Masa skrin harian tamat! Sila selesaikan kuiz wajib.");
+        }
+
+        function addFriend() {
+            const name = document.getElementById('friendNameInput').value;
+            if(!name) return alert("Sila masukkan nama rakan.");
+            const list = document.getElementById('friendsRankingList');
+            list.innerHTML += `<div class="flex justify-between items-center p-3 bg-slate-50 border-2 border-black rounded-xl text-sm font-bold"><span>3. ${name}</span><span class="text-amber-600">120 XP</span></div>`;
+            document.getElementById('friendNameInput').value = '';
+            alert("Rakan berjaya ditambahkan!");
+        }
+
+        function addStudent() {
+            const name = document.getElementById('studentNameInput').value;
+            if(!name) return alert("Sila masukkan nama pelajar.");
+            alert(`Pelajar ${name} berjaya dimasukkan ke dalam kelas 5 Bestari!`);
+            document.getElementById('studentNameInput').value = '';
+        }
+
+        const defaultGames = [
+            {
+                id: 'game-1',
+                title: 'Pengembaraan Sifir Kilat',
+                category: 'Matematik',
+                desc: 'Jawab 3 soalan sifir pantas untuk tugasan wajib!',
+                xp: 50,
+                htmlCode: `<!DOCTYPE html><html><body style="background:#0f172a;color:white;text-align:center;padding:50px;font-family:sans-serif;"><h2>8 × 7 = ?</h2><button onclick="window.parent.postMessage('GAME_WIN','*')" style="padding:10px 20px;font-size:16px;background:#38bdf8;border:none;border-radius:8px;cursor:pointer;">Jawab 56 (Menang)</button></body></html>`
+            }
+        ];
+
+        let gamesList = JSON.parse(localStorage.getItem('ibni_games_library')) || defaultGames;
+
+        function renderGames() {
+            const grid = document.getElementById('gamesGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            gamesList.forEach(game => {
+                grid.innerHTML += `
+                    <div class="ibni-card p-4 flex flex-col justify-between bg-white">
+                        <div>
+                            <span class="bg-cyan-100 text-cyan-900 text-xs font-extrabold px-3 py-1 rounded-full border border-black">${game.category}</span>
+                            <h4 class="font-extrabold text-base mt-2">${game.title}</h4>
+                            <p class="text-xs text-slate-600 mb-4">${game.desc}</p>
+                        </div>
+                        <button onclick="launchGameInSandbox('${game.id}')" class="ibni-pill w-full bg-black text-white font-extrabold py-2 rounded-xl text-xs">Main dalam Sandbox</button>
+                    </div>
+                `;
+            });
+        }
+
+        function launchGameFromTask(gameId) {
+            launchGameInSandbox(gameId);
+        }
+
+        function launchGameInSandbox(gameId) {
+            const game = gamesList.find(g => g.id === gameId);
+            if(!game) return;
+            activeGameXp = game.xp;
+            document.getElementById('modalGameTitle').innerText = game.title;
+            document.getElementById('gameSandboxFrame').srcdoc = game.htmlCode;
+            document.getElementById('gameModal').classList.remove('hidden');
+        }
+
+        function closeGameModal() {
+            document.getElementById('gameSandboxFrame').srcdoc = '';
+            document.getElementById('gameModal').classList.add('hidden');
+        }
+
+        function completeCurrentGame() {
+            currentPoints += activeGameXp;
+            if(document.getElementById('userPoints')) document.getElementById('userPoints').innerText = currentPoints + " XP";
+            alert(`Tahniah! +${activeGameXp} XP berjaya dikutip[cite: 9]!`);
+            closeGameModal();
+        }
+
+        window.addEventListener('message', function(event) {
+            if (event.data === 'GAME_WIN') {
+                completeCurrentGame();
+            }
+        });
+    </script>
+</body>
+</html>
